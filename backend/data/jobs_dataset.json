@@ -1,0 +1,41 @@
+[
+  {
+    "id": "job-001",
+    "title": "Senior Generative AI / RAG Engineer",
+    "company": "Cognitive AI Systems",
+    "location": "San Francisco, CA / Remote",
+    "type": "Full-Time",
+    "experience_level": "Senior (4+ years)",
+    "description": "We are seeking a Senior AI Engineer to spearhead our next-generation RAG search infrastructure. You will design, build, and deploy high-speed vector retrieval pipelines, fine-tune Small Language Models (SLMs), and implement production-grade LLM applications using PyTorch, Hugging Face, LangChain, and FastAPI.",
+    "required_skills": ["Python", "PyTorch", "Hugging Face Transformers", "LangChain", "RAG", "FastAPI", "Vector Databases", "Docker"],
+    "nice_to_have_skills": ["vLLM", "LoRA Fine-tuning", "Kubernetes", "MLOps"],
+    "min_experience_years": 4,
+    "posted_date": "2026-08-15"
+  },
+  {
+    "id": "job-002",
+    "title": "Full Stack AI Engineer",
+    "company": "NextGen Software",
+    "location": "Austin, TX / Remote",
+    "type": "Full-Time",
+    "experience_level": "Mid-Senior (3+ years)",
+    "description": "Looking for a versatile Full Stack Developer who enjoys pairing modern web interfaces (React/TypeScript/HTML/CSS) with intelligent Python AI backends. You will build user-facing generative AI tools, integrate LangChain and HuggingFace pipelines, and ship scalable RESTful APIs.",
+    "required_skills": ["JavaScript", "TypeScript", "React", "Python", "FastAPI", "REST APIs", "Docker"],
+    "nice_to_have_skills": ["LangChain", "PostgreSQL", "Tailwind CSS", "OpenAI API"],
+    "min_experience_years": 3,
+    "posted_date": "2026-08-18"
+  },
+  {
+    "id": "job-003",
+    "title": "Cloud & MLOps Infrastructure Engineer",
+    "company": "Vortex Cloud Tech",
+    "location": "Seattle, WA / Hybrid",
+    "type": "Full-Time",
+    "experience_level": "Senior (5+ years)",
+    "description": "Join our platform team to architect robust Kubernetes infrastructure, automate CI/CD deployments for AI workloads, manage multi-region AWS environments, and ensure high availability for PyTorch inference clusters using Terraform and Prometheus.",
+    "required_skills": ["AWS", "Kubernetes", "Docker", "Terraform", "CI/CD", "Linux", "Python"],
+    "nice_to_have_skills": ["MLOps", "Prometheus", "Grafana", "Bash"],
+    "min_experience_years": 5,
+    "posted_date": "2026-08-19"
+  }
+]

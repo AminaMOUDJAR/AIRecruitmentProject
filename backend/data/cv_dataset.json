@@ -1,0 +1,166 @@
+[
+  {
+    "id": "cand-001",
+    "name": "Sarah Chen",
+    "title": "Senior AI / Machine Learning Engineer",
+    "email": "sarah.chen@example.com",
+    "location": "San Francisco, CA (Remote / Hybrid)",
+    "years_experience": 5,
+    "skills": ["Python", "PyTorch", "Hugging Face Transformers", "LangChain", "RAG", "Vector Databases", "FastAPI", "Docker", "MLOps", "LLMs", "Fine-tuning", "vLLM"],
+    "bio": "AI Engineer passionate about LLM systems, RAG architectures, and efficient SLM deployment. 5+ years building production ML pipelines, transformer models, and retrieval systems.",
+    "experience": [
+      {
+        "role": "Senior ML Engineer",
+        "company": "NeuralScale Labs",
+        "duration": "2022 - Present",
+        "description": "Architected an enterprise RAG platform with LangChain and PyTorch sentence embeddings, indexing 5M+ technical documents. Reduced LLM inference latency by 40% using quantized SLMs (SmolLM/Qwen) and vLLM."
+      },
+      {
+        "role": "Machine Learning Engineer",
+        "company": "Cortex Analytics",
+        "duration": "2019 - 2022",
+        "description": "Built NLP pipelines for automated document classification and sentiment analysis using HuggingFace transformers and PyTorch. Deployed microservices with FastAPI and Docker."
+      }
+    ],
+    "education": [
+      {
+        "degree": "M.S. in Computer Science (AI Track)",
+        "institution": "Stanford University",
+        "year": "2019"
+      },
+      {
+        "degree": "B.S. in Computer Engineering",
+        "institution": "UC Berkeley",
+        "year": "2017"
+      }
+    ],
+    "raw_cv_text": "SARAH CHEN - Senior AI / Machine Learning Engineer\nEmail: sarah.chen@example.com | Location: San Francisco, CA | 5+ Years Experience\n\nPROFESSIONAL SUMMARY\nAI Engineer specializing in Large and Small Language Model (LLM/SLM) applications, Retrieval-Augmented Generation (RAG), and neural semantic search. Deep hands-on expertise with PyTorch, Hugging Face ecosystem, LangChain, FastAPI, and vector similarity indexing.\n\nCORE SKILLS\n- Machine Learning & Deep Learning: PyTorch, TensorFlow, Scikit-learn, Hugging Face Transformers\n- Generative AI & NLP: LangChain, RAG Systems, FAISS/Chroma, LoRA Fine-Tuning, vLLM, Prompt Engineering\n- Backend & Deployment: Python, FastAPI, Docker, Kubernetes, AWS SageMaker, CI/CD, MLOps\n\nEXPERIENCE\nSenior ML Engineer | NeuralScale Labs (2022 - Present)\n- Architected an enterprise RAG platform leveraging LangChain and PyTorch sentence embeddings, indexing 5M+ technical documents.\n- Implemented Small Language Model (SLM) pipelines using HuggingFace Qwen and SmolLM checkpoints, reducing inference cost by 65%.\n- Developed semantic vector matching engines with sub-50ms latency using PyTorch tensor operations.\n\nMachine Learning Engineer | Cortex Analytics (2019 - 2022)\n- Developed multilingual NLP models and fine-tuned BERT/RoBERTa architectures on proprietary datasets.\n- Built high-throughput FastAPI inference microservices handling 2M+ daily requests in Dockerized clusters.\n\nEDUCATION\n- M.S. in Computer Science (Artificial Intelligence) - Stanford University (2019)\n- B.S. in Computer Engineering - UC Berkeley (2017)"
+  },
+  {
+    "id": "cand-002",
+    "name": "Alex Rivera",
+    "title": "Full Stack & AI Application Developer",
+    "email": "alex.rivera@example.com",
+    "location": "Austin, TX (Remote)",
+    "years_experience": 4,
+    "skills": ["JavaScript", "TypeScript", "React", "Node.js", "Python", "FastAPI", "LangChain", "OpenAI API", "PostgreSQL", "Tailwind CSS", "Docker", "REST APIs"],
+    "bio": "Full-stack developer who loves integrating generative AI capabilities into sleek, performant web applications. Experienced in modern JavaScript frontends and Python AI backends.",
+    "experience": [
+      {
+        "role": "Full Stack AI Developer",
+        "company": "SaaSFlow Technologies",
+        "duration": "2021 - Present",
+        "description": "Developed interactive AI copilots and dashboard interfaces using React and FastAPI. Connected LangChain tool agents to internal PostgreSQL business data."
+      },
+      {
+        "role": "Frontend Software Engineer",
+        "company": "AppCraft Studio",
+        "duration": "2020 - 2021",
+        "description": "Engineered responsive web applications and state management workflows in TypeScript/React with REST and GraphQL APIs."
+      }
+    ],
+    "education": [
+      {
+        "degree": "B.S. in Software Engineering",
+        "institution": "University of Texas at Austin",
+        "year": "2020"
+      }
+    ],
+    "raw_cv_text": "ALEX RIVERA - Full Stack & AI Application Developer\nEmail: alex.rivera@example.com | Location: Austin, TX | 4 Years Experience\n\nSUMMARY\nFull-Stack Engineer with strong expertise in bridging modern web interfaces (React, TypeScript, HTML5/CSS) with modern AI backend services (Python, FastAPI, LangChain). Proven track record of delivering end-to-end AI-powered products.\n\nTECHNICAL SKILLS\n- Languages: Python, JavaScript (ES6+), TypeScript, SQL, HTML5, CSS3\n- Frontend: React, Redux, Next.js, Tailwind CSS, Responsive Web Design\n- Backend & AI: FastAPI, Node.js, Express, LangChain, HuggingFace Inference, RESTful APIs, PostgreSQL\n- DevOps & Tools: Git, Docker, GitHub Actions, Linux, Postman\n\nWORK EXPERIENCE\nFull Stack AI Developer | SaaSFlow Technologies (2021 - Present)\n- Built user-facing conversational AI interfaces and resume screening dashboards with React and FastAPI.\n- Integrated LangChain agents with vector retrieval to extract resume insights for HR managers.\n- Created modular REST APIs with robust Pydantic schemas and authentication.\n\nFrontend Software Engineer | AppCraft Studio (2020 - 2021)\n- Developed cross-platform web applications with dynamic animations and accessible UI components.\n- Collaborated with UX designers to translate wireframes into interactive prototypes.\n\nEDUCATION\n- B.S. in Software Engineering - University of Texas at Austin (2020)"
+  },
+  {
+    "id": "cand-003",
+    "name": "Marcus Vance",
+    "title": "Cloud Infrastructure & DevOps Engineer",
+    "email": "marcus.vance@example.com",
+    "location": "Seattle, WA (Hybrid)",
+    "years_experience": 6,
+    "skills": ["AWS", "Kubernetes", "Docker", "Terraform", "CI/CD", "Linux", "Python", "Bash", "Prometheus", "Grafana", "MLOps", "Security"],
+    "bio": "DevOps & Cloud Infrastructure engineer with 6 years experience building highly resilient cloud environments, Kubernetes clusters, and automated MLOps pipelines.",
+    "experience": [
+      {
+        "role": "Lead DevOps Engineer",
+        "company": "CloudPeak Solutions",
+        "duration": "2021 - Present",
+        "description": "Managed multi-region AWS Kubernetes clusters (EKS) for machine learning workloads and microservices. Implemented Infrastructure-as-Code via Terraform."
+      },
+      {
+        "role": "Site Reliability Engineer",
+        "company": "DataBridge Systems",
+        "duration": "2018 - 2021",
+        "description": "Automated deployment pipelines with GitLab CI/CD and Docker. Configured observability stacks using Prometheus and Grafana."
+      }
+    ],
+    "education": [
+      {
+        "degree": "B.S. in Computer Information Systems",
+        "institution": "University of Washington",
+        "year": "2018"
+      }
+    ],
+    "raw_cv_text": "MARCUS VANCE - Cloud Infrastructure & DevOps Engineer\nEmail: marcus.vance@example.com | Location: Seattle, WA | 6 Years Experience\n\nSUMMARY\nSenior Infrastructure and DevOps Engineer specializing in Kubernetes, AWS Cloud, Terraform, and automated deployment pipelines for distributed applications and AI/ML model hosting.\n\nCORE COMPETENCIES\n- Cloud & Containers: AWS (EC2, EKS, S3, IAM), Kubernetes, Docker, Helm\n- Infrastructure as Code & Automation: Terraform, Ansible, GitHub Actions, GitLab CI\n- Monitoring & Observability: Prometheus, Grafana, ELK Stack, Datadog\n- Scripting & Systems: Python, Bash, Linux Kernel, Networking, SSL/TLS\n\nEXPERIENCE\nLead DevOps Engineer | CloudPeak Solutions (2021 - Present)\n- Architected high-availability Kubernetes infrastructure hosting GPU instances for PyTorch AI inference.\n- Reduced cloud infrastructure spending by 35% using Spot instances and cluster autoscaling.\n- Enforced SOC2 compliance and zero-trust IAM access policies.\n\nSite Reliability Engineer | DataBridge Systems (2018 - 2021)\n- Designed zero-downtime CI/CD workflows and automated health monitoring dashboards.\n\nEDUCATION\n- B.S. in Computer Information Systems - University of Washington (2018)"
+  },
+  {
+    "id": "cand-004",
+    "name": "Elena Rostova",
+    "title": "Data Scientist & NLP Specialist",
+    "email": "elena.rostova@example.com",
+    "location": "New York, NY (Remote)",
+    "years_experience": 3,
+    "skills": ["Python", "PyTorch", "NLP", "Scikit-Learn", "Pandas", "Hugging Face", "SQL", "Tableau", "Statistical Modeling", "Topic Modeling", "FastAPI"],
+    "bio": "Data Scientist passionate about text analytics, semantic embeddings, and statistical machine learning. Experienced in transforming unstructured textual data into actionable intelligence.",
+    "experience": [
+      {
+        "role": "Data Scientist",
+        "company": "Lexicon Data Labs",
+        "duration": "2021 - Present",
+        "description": "Constructed NLP models for text summarization, entity extraction, and sentiment scoring using HuggingFace transformers and PyTorch. Built analytics dashboards for enterprise clients."
+      }
+    ],
+    "education": [
+      {
+        "degree": "M.S. in Applied Data Science",
+        "institution": "Columbia University",
+        "year": "2021"
+      },
+      {
+        "degree": "B.S. in Applied Mathematics & Statistics",
+        "institution": "NYU",
+        "year": "2019"
+      }
+    ],
+    "raw_cv_text": "ELENA ROSTOVA - Data Scientist & NLP Specialist\nEmail: elena.rostova@example.com | Location: New York, NY | 3 Years Experience\n\nSUMMARY\nData Scientist with rigorous foundation in Applied Statistics, Natural Language Processing (NLP), and PyTorch. Adept at extracting insights from unstructured text, training vector embedding spaces, and building predictive analytics models.\n\nSKILLS\n- Machine Learning & NLP: PyTorch, Hugging Face, Scikit-learn, NLTK, spaCy, Transformers, Cosine Similarity\n- Data Analysis & Math: Pandas, NumPy, SciPy, Statistical Inference, Hypothesis Testing, SQL\n- Visualization & Tools: Tableau, Matplotlib, Seaborn, Git, Jupyter, FastAPI\n\nEXPERIENCE\nData Scientist | Lexicon Data Labs (2021 - Present)\n- Developed domain-specific text classification pipelines and keyword extraction using PyTorch embeddings.\n- Analyzed millions of customer feedback entries to uncover recurring pain points with 92% precision.\n- Created RESTful API endpoints using FastAPI for internal team integration.\n\nEDUCATION\n- M.S. in Applied Data Science - Columbia University (2021)\n- B.S. in Applied Mathematics & Statistics - NYU (2019)"
+  },
+  {
+    "id": "cand-005",
+    "name": "David Kim",
+    "title": "Technical Product Manager (AI Platforms)",
+    "email": "david.kim@example.com",
+    "location": "Boston, MA (Hybrid)",
+    "years_experience": 7,
+    "skills": ["Product Strategy", "AI/ML Product Lifecycle", "Agile / Scrum", "User Research", "Wireframing", "Roadmapping", "Python basics", "SQL", "Stakeholder Management", "Jira"],
+    "bio": "Technical Product Manager with a computer science background, specializing in developer tools, AI/ML platforms, and enterprise SaaS solutions.",
+    "experience": [
+      {
+        "role": "Senior Product Manager - AI Tooling",
+        "company": "Kinetix AI",
+        "duration": "2021 - Present",
+        "description": "Led product vision and feature delivery for an AI model evaluation and prompt management suite used by 10,000+ ML engineers."
+      },
+      {
+        "role": "Product Manager",
+        "company": "OmniCloud Software",
+        "duration": "2018 - 2021",
+        "description": "Defined product requirements, user personas, and release roadmaps for B2B cloud integration tools."
+      }
+    ],
+    "education": [
+      {
+        "degree": "B.S. in Computer Science & Economics",
+        "institution": "Boston University",
+        "year": "2017"
+      }
+    ],
+    "raw_cv_text": "DAVID KIM - Technical Product Manager (AI Platforms)\nEmail: david.kim@example.com | Location: Boston, MA | 7 Years Experience\n\nSUMMARY\nTechnical Product Leader with 7 years of experience directing product roadmap, user research, and go-to-market execution for AI/ML platform tools and developer-focused enterprise applications.\n\nCORE SKILLS\n- Product Management: PRD Authoring, Roadmapping, OKRs, Agile/Scrum, User Interviews, Feature Prioritization\n- Technical Knowledge: Generative AI concepts, Machine Learning workflows, REST APIs, SQL, System Architecture\n- Design & Analytics: Figma, Wireframing, Mixpanel, Google Analytics, Jira, Confluence\n\nEXPERIENCE\nSenior Product Manager | Kinetix AI (2021 - Present)\n- Defined and launched an AI evaluation platform, growing monthly active developers by 140% in 12 months.\n- Spearheaded enterprise feedback loops with engineering leads to prioritize RAG and model benchmarking tools.\n\nProduct Manager | OmniCloud Software (2018 - 2021)\n- Collaborated with engineering, design, and sales to launch 6 major enterprise releases on schedule.\n\nEDUCATION\n- B.S. in Computer Science & Economics - Boston University (2017)"
+  }
+]

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentMatch AI — Enterprise Recruiting & Candidate Matching Platform</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <!-- Top Enterprise Header -->
+  <header class="top-header">
+    <div class="top-header-inner">
+      <div class="brand-wrapper">
+        <div class="brand-mark">TM</div>
+        <div class="brand-title-group">
+          <h1>TalentMatch AI</h1>
+          <div class="brand-subtitle">Semantic Candidate Matching &bull; PyTorch Vector Retrieval</div>
+        </div>
+      </div>
+
+      <nav class="nav-tabs">
+        <button class="nav-tab-btn active" id="tabRecruiter" onclick="switchRole('recruiter')">
+          Recruitment Workspace
+        </button>
+        <button class="nav-tab-btn" id="tabSeeker" onclick="switchRole('seeker')">
+          Candidate Portal
+        </button>
+      </nav>
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span class="system-status">
+          <span class="status-dot"></span>
+          Vector RAG Engine Online
+        </span>
+        <button class="btn btn-secondary btn-sm" onclick="resetDemoData()" title="Reset to original dataset">
+          Reset Dataset
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-container">
+
+    <!-- ==================== RECRUITER WORKSPACE ==================== -->
+    <main id="recruiterView" class="portal-view active">
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Candidate Evaluation & Semantic Ranking</h2>
+          <p class="page-description">Dense vector embeddings evaluate candidate background against job specifications.</p>
+        </div>
+        <div>
+          <button class="btn btn-primary" onclick="openModal('postJobModal')">
+            Create Job Requisition
+          </button>
+        </div>
+      </div>
+
+      <div class="two-col-layout">
+        <!-- Left Column: Active Job Requisition -->
+        <aside class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Active Requisition</span>
+          </div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label class="form-label">Select Requisition</label>
+              <select id="recruiterJobSelect" class="form-select" onchange="onRecruiterJobChange()">
+                <!-- Populated via JS -->
+              </select>
+            </div>
+
+            <div id="activeJobDetailsCard" style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-subtle);">
+              <h3 id="activeJobTitle" style="font-size: 15px; font-weight: 600; color: var(--text-heading); margin-bottom: 8px;">Loading...</h3>
+              
+              <table class="req-meta-table">
+                <tr>
+                  <td class="req-meta-label">Company:</td>
+                  <td id="activeJobCompany" class="req-meta-value">-</td>
+                </tr>
+                <tr>
+                  <td class="req-meta-label">Location:</td>
+                  <td id="activeJobLocation" class="req-meta-value">-</td>
+                </tr>
+                <tr>
+                  <td class="req-meta-label">Seniority:</td>
+                  <td id="activeJobExp" class="req-meta-value">-</td>
+                </tr>
+              </table>
+
+              <p id="activeJobDescription" style="font-size: 12px; color: var(--text-body); margin: 10px 0 14px; line-height: 1.5;">-</p>
+
+              <label class="form-label">Required Competencies</label>
+              <div id="activeJobSkills" class="tag-group" style="margin-bottom: 12px;"></div>
+
+              <label class="form-label">Preferred Skills</label>
+              <div id="activeJobNiceSkills" class="tag-group"></div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Right Column: Ranked Candidate Matches -->
+        <section class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Evaluated Candidates</span>
+            <span id="candidateCountBadge" class="tag tag-brand">0 Candidates</span>
+          </div>
+          <div class="panel-body" style="padding: 16px;">
+            <div id="rankedCandidatesList">
+              <div class="loading-placeholder">
+                <div class="spinner-border"></div>
+                <div style="margin-top: 8px;">Calculating semantic vector scores...</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ==================== CANDIDATE PORTAL ==================== -->
+    <main id="seekerView" class="portal-view">
+
+      <!-- Not Logged In View -->
+      <div id="seekerAuthSection" style="max-width: 480px; margin: 36px auto 0; display: none;">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Candidate Account Sign In</span>
+          </div>
+          <div class="panel-body">
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+              Sign in to manage your resume, view matched openings, and review automated AI profile suggestions.
+            </p>
+
+            <form id="seekerLoginForm" onsubmit="handleCandidateLogin(event)">
+              <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" id="loginEmail" class="form-control" required placeholder="e.g. sarah.chen@example.com">
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                Sign In to Candidate Portal
+              </button>
+            </form>
+
+            <div style="margin: 20px 0; text-align: center; position: relative;">
+              <hr style="border: 0; border-top: 1px solid var(--border-subtle);">
+              <span style="position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: #ffffff; padding: 0 10px; font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Demo Accounts</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <button class="btn btn-secondary btn-sm" onclick="quickLoginCandidate('cand-001')">
+                Sarah Chen &bull; Senior ML Engineer
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="quickLoginCandidate('cand-002')">
+                Alex Rivera &bull; Full Stack AI Developer
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="quickLoginCandidate('cand-004')">
+                Elena Rostova &bull; Data Scientist & NLP
+              </button>
+            </div>
+
+            <div style="margin: 20px 0; text-align: center; position: relative;">
+              <hr style="border: 0; border-top: 1px solid var(--border-subtle);">
+              <span style="position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: #ffffff; padding: 0 10px; font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Or Ingest New CV</span>
+            </div>
+
+            <div class="upload-dropzone" onclick="document.getElementById('authCvFileInput').click()">
+              <div class="upload-icon">&#8679;</div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-heading);">Upload Resume (PDF / TXT)</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Extracts profile data and creates account</div>
+              <input type="file" id="authCvFileInput" accept=".pdf,.txt" style="display: none;" onchange="handleCvFileUpload(event)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Authenticated Private Dashboard -->
+      <div id="seekerDashboardSection" style="display: none;">
+        <div class="page-header">
+          <div>
+            <h2 class="page-title">Candidate Profile & Matched Requisitions</h2>
+            <p class="page-description">Manage your credentials and review tailored job opportunities.</p>
+          </div>
+        </div>
+
+        <div class="two-col-layout">
+          <!-- Left Column: Profile Card -->
+          <aside class="panel">
+            <div class="panel-body">
+              <div class="profile-summary-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="profile-avatar" id="seekerAvatar">SC</div>
+                  <div>
+                    <div id="seekerHeaderName" style="font-weight: 600; font-size: 13px; color: var(--text-heading);">Sarah Chen</div>
+                    <div id="seekerHeaderEmail" style="font-size: 11px; color: var(--text-muted);">sarah@example.com</div>
+                  </div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="candidateLogout()">Sign Out</button>
+              </div>
+
+              <form id="seekerProfileForm" onsubmit="saveSeekerProfile(event)">
+                <div class="form-group">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" id="seekerName" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Professional Headline</label>
+                  <input type="text" id="seekerTitle" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input type="email" id="seekerEmail" class="form-control" required readonly style="background: var(--bg-surface-alt);">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Skills (comma-separated)</label>
+                  <input type="text" id="seekerSkills" class="form-control">
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Executive Bio</label>
+                  <textarea id="seekerBio" rows="3" class="form-textarea"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  Save Profile Changes
+                </button>
+              </form>
+
+              <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-subtle);">
+                <label class="form-label">Replace Resume Document</label>
+                <div class="upload-dropzone" onclick="document.getElementById('cvFileInput').click()" style="padding: 12px;">
+                  <div style="font-size: 12px; font-weight: 500; color: var(--brand-primary);">Click to upload new PDF/TXT</div>
+                  <input type="file" id="cvFileInput" accept=".pdf,.txt" style="display: none;" onchange="handleCvFileUpload(event)">
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Right Column: AI Feedback & Matches -->
+          <section style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- AI Resume Optimizer -->
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">Resume Optimization Feedback</span>
+                <span class="tag tag-success">Automated Analysis</span>
+              </div>
+              <div class="panel-body">
+                <div id="seekerTipsContainer">
+                  <div class="loading-placeholder">
+                    <div class="spinner-border"></div>
+                    <div style="margin-top: 6px;">Generating feedback...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Matched Job Requisitions -->
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">Matched Job Requisitions</span>
+                <span id="seekerJobMatchCount" class="tag tag-brand">0 Positions</span>
+              </div>
+              <div class="panel-body" style="padding: 16px;">
+                <div id="seekerMatchedJobsList"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Modal 1: Candidate Evaluation Scorecard -->
+  <div class="modal-backdrop" id="aiAnalysisModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modalCandidateName">Candidate Evaluation</div>
+          <div id="modalJobTitleSub" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Role Analysis</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('aiAnalysisModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="modalAnalysisBody">
+        <div class="loading-placeholder">
+          <div class="spinner-border"></div>
+          <div style="margin-top: 8px;">Generating structured interview scorecard...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Create Requisition -->
+  <div class="modal-backdrop" id="postJobModal">
+    <div class="modal-dialog" style="max-width: 520px;">
+      <div class="modal-header">
+        <div class="modal-title">Create Job Requisition</div>
+        <button class="modal-close" onclick="closeModal('postJobModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="newJobForm" onsubmit="handlePostNewJob(event)">
+          <div class="form-group">
+            <label class="form-label">Position Title</label>
+            <input type="text" id="postJobTitle" class="form-control" required placeholder="e.g. Senior Machine Learning Engineer">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label">Organization / Team</label>
+              <input type="text" id="postJobCompany" class="form-control" required placeholder="e.g. Core AI Engineering">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Location</label>
+              <input type="text" id="postJobLocation" class="form-control" required placeholder="e.g. San Francisco, CA / Hybrid">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Job Summary & Responsibilities</label>
+            <textarea id="postJobDescription" rows="4" class="form-textarea" required placeholder="Describe technical scope, key objectives, and day-to-day requirements..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Required Skills (comma-separated)</label>
+            <input type="text" id="postJobRequiredSkills" class="form-control" required placeholder="Python, PyTorch, RAG, FastAPI">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Preferred Skills (comma-separated)</label>
+            <input type="text" id="postJobNiceSkills" class="form-control" placeholder="Docker, Kubernetes, vLLM">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Minimum Years Experience</label>
+            <input type="number" id="postJobMinExp" class="form-control" value="3" min="0" max="25">
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 6px;">
+            Publish Requisition
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
