@@ -21,15 +21,13 @@ The app has two sides:
 The SLM reasoning runs locally — no API keys needed.
 
 ## Architecture
-Frontend (vanilla JS)  <--REST-->  FastAPI backend
-|
-+-----------------+-----------------+
-|                                   |
-Vector Engine                         Reasoning Engine
-(MiniLM embeddings,                  (SmolLM2 / Qwen2.5,
-cosine similarity,                    Transformers pipeline)
-LangChain chunking)
-
+- Frontend: Vanilla HTML/JS. I used AI to plan the layout and write the CSS; I adjusted the styling and interaction logic myself.
+- Backend: FastAPI serving a REST API.
+- CV Parsing: PyMuPDF extracts text from uploaded PDFs and TXT files.
+- Embeddings: sentence-transformers (MiniLM) running on PyTorch converts CVs and job descriptions into dense vectors.
+- Vector Search: Cosine similarity matches candidates to jobs in sub-50ms; LangChain handles document chunking for RAG snippets.
+- Reasoning Engine: SmolLM2 and Qwen2.5 (via the Transformers library) run locally to generate match rationales, skill-gap analysis, interview questions, and resume tips — no external API calls.
+- Data Flow: Frontend → FastAPI → vector retrieval + local SLM inference → results back to UI.
 
 ## Quickstart
 
