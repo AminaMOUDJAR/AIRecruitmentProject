@@ -1,3 +1,14 @@
+---
+title: TalentMatch AI
+emoji: 💼
+colorFrom: indigo
+colorTo: blue
+sdk: gradio
+sdk_version: 4.44.0
+app_file: app.py
+pinned: false
+---
+
 # TalentMatch AI — Intelligent Recruitment & Candidate Matching Platform
 
 A recruiting tool that matches candidates to jobs using dense vector embeddings instead of simple keyword filtering. Built with FastAPI + PyTorch on the backend and a modern glassmorphic vanilla JS frontend.
