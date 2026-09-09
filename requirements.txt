@@ -6,6 +6,7 @@ pydantic-settings>=2.2.0
 sentence-transformers>=2.5.0
 qdrant-client>=1.8.0
 spacy>=3.7.0
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
 pymupdf>=1.23.0
 python-jose>=3.3.0
 passlib>=1.7.4
