@@ -1,4 +1,7 @@
-# TalentMatch AI - Local Application Server
+"""
+TalentMatch AI - Application Launcher
+Runs the FastAPI Backend & Serves the Modern Glassmorphic Frontend
+"""
 import sys
 import os
 import uvicorn
@@ -10,7 +13,7 @@ def open_browser():
     # Give the server a second to start up before launching browser
     time.sleep(1.2)
     url = "http://127.0.0.1:8000"
-    print(f"\nOpening TalentMatch AI in browser: {url}\n")
+    print(f"\n🚀 Opening TalentMatch AI in browser: {url}\n")
     try:
         webbrowser.open(url)
     except Exception:
@@ -22,8 +25,8 @@ if __name__ == "__main__":
         sys.path.insert(0, project_root)
 
     print("=" * 70)
-    print(" TalentMatch AI | Intelligent Recruitment & Matching Engine")
-    print(" Tech: FastAPI + SQLModel + Qdrant in-memory + NLP Transformers")
+    print(" 🎯 TalentMatch AI | Applied AI Recruiting & Resume Matching Platform")
+    print(" Powered by SLMs, Dense RAG, HuggingFace, PyTorch & LangChain")
     print("=" * 70)
     print(" Web UI:           http://127.0.0.1:8000")
     print(" API Docs:         http://127.0.0.1:8000/docs")

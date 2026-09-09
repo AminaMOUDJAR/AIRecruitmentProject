@@ -1,11 +1,19 @@
 # TalentMatch AI — Intelligent Recruitment & Candidate Matching Platform
-> This file was written with the assistance of Gemini AI.
 
-**Target Hardware:** 8GB RAM, i5 6th Gen, CPU-Only
+A recruiting tool that matches candidates to jobs using dense vector embeddings instead of simple keyword filtering. Built with FastAPI + PyTorch on the backend and a modern glassmorphic vanilla JS frontend.
 
 ---
 
-## 1. System Architecture
+## 🌟 Overview & Key Features
+
+The application consists of two integrated portals:
+
+1. **Recruiter Hub** — Post job requisitions, rank candidates by semantic similarity (0–100% match scores), inspect retrieved CV evidence snippets, and generate custom technical interview scorecards based on resume gaps.
+2. **Job Seeker Portal** — Upload a CV (PDF or TXT), edit applicant profile, see matched openings, and receive AI resume optimization feedback.
+
+---
+
+## 🏛️ 1. System Architecture
 
 ```
 +------------------------------------------------------------------------------------+
@@ -35,13 +43,13 @@
 |  1. ParserAgent:   PyMuPDF + spaCy NER + regex skill extraction                   |
 |  2. EmbedderAgent: LangChain chunker + all-MiniLM-L6-v2 embeddings               |
 |  3. MatcherAgent:  0.7*max_sim + 0.3*mean_sim + skill bonus (capped at 95%)       |
-|  4. AnalystAgent:  Grok (xAI) / HuggingFace SLM with JSON output guardrails       |
+|  4. AnalystAgent:  Grok (xAI) / Groq / HuggingFace SLM with JSON guardrails        |
 +------------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 2. Memory Budget (8GB RAM)
+## ⚡ 2. Memory Budget (Target: 8GB RAM, CPU-Only)
 
 | Component | RAM Usage |
 | :--- | :--- |
@@ -50,24 +58,24 @@
 | Qdrant In-Memory | ~200 MB |
 | MiniLM Embeddings | ~100 MB |
 | spaCy (en_core_web_sm) | ~50 MB |
-| Grok API (optional) | ~0 MB |
-| HuggingFace SLM (fallback) | ~300 MB |
+| Grok / Groq Cloud API | ~0 MB |
+| HuggingFace SLM (local fallback) | ~300 MB |
 | **Headroom** | **~4+ GB** |
 
 ---
 
-## 3. Tech Stack
+## 🛠️ 3. Tech Stack
 
 - **Backend:** FastAPI, Uvicorn, SQLModel, SQLite, Qdrant (in-memory), LangGraph
-- **NLP & Parsing:** PyMuPDF, spaCy, sentence-transformers (all-MiniLM-L6-v2), langchain-text-splitters
-- **LLM:** Grok (xAI API) with automatic fallback to HuggingFace SmolLM2-135M in-process
-- **Auth:** bcrypt, python-jose (JWT — 15min access / 7-day refresh)
-- **Testing:** pytest, lightweight RAGAS benchmark suite
-- **Frontend:** Vanilla HTML/CSS/JS — built with the assistance of Gemini AI
+- **NLP & Parsing:** PyMuPDF, spaCy, sentence-transformers (`all-MiniLM-L6-v2`), langchain-text-splitters
+- **LLM Reasoning:** Grok (xAI API) & Groq (`llama-3.3-70b-versatile`) with automatic fallback to local HuggingFace SmolLM2-135M
+- **Authentication:** bcrypt, python-jose (JWT — 15min access / 7-day refresh)
+- **Frontend:** Vanilla HTML5, modern CSS3 (glassmorphic aesthetic), Vanilla JavaScript
+- **Testing:** pytest, benchmark evaluation suite
 
 ---
 
-## 4. API Endpoints
+## 📡 4. API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` — Create candidate or recruiter account
@@ -91,13 +99,13 @@
 - `POST /api/match/candidate/{id}` — Rank jobs for a specific candidate
 - `DELETE /api/candidates/{id}` — Delete candidate
 
-### System
+### System & Health
 - `GET  /api/health` — Database, vector store, and LLM status
 - `POST /api/admin/reset-db` — Reset to original demo dataset
 
 ---
 
-## 5. Running Locally
+## 🚀 5. Running Locally
 
 ### 1. Install Dependencies
 ```bash
@@ -105,24 +113,25 @@ pip install -r backend/requirements.txt
 python -m spacy download en_core_web_sm
 ```
 
-### 2. (Optional) Configure Grok API Key
-```bash
-GROK_API_KEY=xai-your-key-here
-GROK_MODEL=grok-2-latest
+### 2. Configure Environment (Optional for Cloud LLM)
+Create a `.env` file in the root directory:
+```env
+GROK_API_KEY=your_key_here
+LLM_PROVIDER=auto
 ```
-Without a Grok key, the app runs fully offline using the built-in HuggingFace SLM.
+*Note: If no API key is provided, the system automatically uses the local HuggingFace SLM.*
 
-### 3. Start the Application
+### 3. Start the Server
 ```bash
 python run.py
 ```
-- Web UI: `http://127.0.0.1:8000`
-- API Docs: `http://127.0.0.1:8000/docs`
-- Health: `http://127.0.0.1:8000/api/health`
+- **Web UI:** `http://127.0.0.1:8000`
+- **API Docs:** `http://127.0.0.1:8000/docs`
+- **Health Check:** `http://127.0.0.1:8000/api/health`
 
 ---
 
-## 6. Tests & Benchmarks
+## 🧪 6. Tests & Benchmarks
 
 ```bash
 # Run test suite
@@ -134,5 +143,5 @@ python benchmark/evaluate.py
 
 ---
 
-## 7. License
-MIT — free to use, modify, and deploy.
+## 📄 7. License
+MIT — Free to use, modify, and deploy.
