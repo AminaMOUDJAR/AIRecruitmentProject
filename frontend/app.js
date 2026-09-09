@@ -1,4 +1,5 @@
-// TalentMatch AI - Enterprise Platform Controller
+// TalentMatch AI - Frontend Controller
+// This frontend was built with the assistance of Gemini AI
 const API_BASE = "";
 
 // State
@@ -7,7 +8,7 @@ let state = {
   jobs: [],
   candidates: [],
   selectedJobId: null,
-  loggedInCandidateId: localStorage.getItem("talentmatch_candidate_id") || "cand-001",
+  loggedInCandidateId: localStorage.getItem("talentmatch_candidate_id") || "cand-dz-001",
   activeMatches: []
 };
 

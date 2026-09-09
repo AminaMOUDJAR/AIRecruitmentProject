@@ -1,0 +1,102 @@
+[
+  {
+    "id": "eval-01",
+    "job_title": "Senior Generative AI / RAG Engineer",
+    "job_description": "We are seeking a Senior AI Engineer to build enterprise RAG search systems using PyTorch, Hugging Face, LangChain, and FastAPI.",
+    "required_skills": ["Python", "PyTorch", "Hugging Face Transformers", "LangChain", "RAG", "FastAPI"],
+    "candidate_text": "SARAH CHEN - Senior AI Engineer with 5+ years experience in PyTorch, LangChain, and RAG architectures. Built enterprise retrieval pipelines indexing 5M+ documents using FastAPI.",
+    "candidate_skills": ["Python", "PyTorch", "LangChain", "RAG", "FastAPI", "Docker"],
+    "expected_tier": "Top Match",
+    "expected_min_score": 80.0
+  },
+  {
+    "id": "eval-02",
+    "job_title": "Senior Generative AI / RAG Engineer",
+    "job_description": "We are seeking a Senior AI Engineer to build enterprise RAG search systems using PyTorch, Hugging Face, LangChain, and FastAPI.",
+    "required_skills": ["Python", "PyTorch", "Hugging Face Transformers", "LangChain", "RAG", "FastAPI"],
+    "candidate_text": "DAVID KIM - Senior Frontend Developer with 7 years experience building React, Vue, CSS animations, and Figma prototypes.",
+    "candidate_skills": ["React", "JavaScript", "CSS", "HTML", "TypeScript"],
+    "expected_tier": "Low Fit",
+    "expected_max_score": 55.0
+  },
+  {
+    "id": "eval-03",
+    "job_title": "Full Stack AI Engineer",
+    "job_description": "Looking for a versatile Full Stack Developer pairing React and TypeScript with Python FastAPI backends and LangChain tools.",
+    "required_skills": ["JavaScript", "TypeScript", "React", "Python", "FastAPI"],
+    "candidate_text": "ALEX RIVERA - Full Stack Developer with React, TypeScript, Python, and FastAPI experience building AI applications.",
+    "candidate_skills": ["React", "TypeScript", "Python", "FastAPI", "Node.js"],
+    "expected_tier": "Top Match",
+    "expected_min_score": 80.0
+  },
+  {
+    "id": "eval-04",
+    "job_title": "Cloud & MLOps Infrastructure Engineer",
+    "job_description": "Kubernetes infrastructure, CI/CD pipelines, AWS deployments for PyTorch clusters.",
+    "required_skills": ["AWS", "Kubernetes", "Docker", "Terraform", "CI/CD"],
+    "candidate_text": "MARCUS VANCE - DevOps & Cloud Architect with 6+ years in AWS, Kubernetes, Terraform, and Dockerized microservices.",
+    "candidate_skills": ["AWS", "Kubernetes", "Docker", "Terraform", "Linux"],
+    "expected_tier": "Top Match",
+    "expected_min_score": 80.0
+  },
+  {
+    "id": "eval-05",
+    "job_title": "Cloud & MLOps Infrastructure Engineer",
+    "job_description": "Kubernetes infrastructure, CI/CD pipelines, AWS deployments for PyTorch clusters.",
+    "required_skills": ["AWS", "Kubernetes", "Docker", "Terraform", "CI/CD"],
+    "candidate_text": "LISA WONG - Junior Graphic Designer with experience in Photoshop, Illustrator, and marketing branding.",
+    "candidate_skills": ["Photoshop", "Illustrator", "Figma", "Branding"],
+    "expected_tier": "Low Fit",
+    "expected_max_score": 45.0
+  },
+  {
+    "id": "eval-06",
+    "job_title": "NLP Data Scientist",
+    "job_description": "Train BERT, RoBERTa, and SpaCy models for named entity recognition and text classification.",
+    "required_skills": ["NLP", "Python", "Transformers", "Scikit-Learn"],
+    "candidate_text": "ELENA ROSTOVA - Data Scientist specializing in NLP, transformers, Scikit-Learn, and Python analytics.",
+    "candidate_skills": ["NLP", "Python", "Scikit-Learn", "Transformers", "Pandas"],
+    "expected_tier": "Top Match",
+    "expected_min_score": 75.0
+  },
+  {
+    "id": "eval-07",
+    "job_title": "Backend Python Microservices Developer",
+    "job_description": "Design asynchronous FastAPI microservices, SQLite/PostgreSQL storage, and REST APIs.",
+    "required_skills": ["Python", "FastAPI", "SQL", "Docker", "REST APIs"],
+    "candidate_text": "JAMES WILSON - Backend Engineer with 4 years building FastAPI services and SQL databases with Docker.",
+    "candidate_skills": ["Python", "FastAPI", "SQL", "Docker", "REST APIs"],
+    "expected_tier": "Top Match",
+    "expected_min_score": 80.0
+  },
+  {
+    "id": "eval-08",
+    "job_title": "Backend Python Microservices Developer",
+    "job_description": "Design asynchronous FastAPI microservices, SQLite/PostgreSQL storage, and REST APIs.",
+    "required_skills": ["Python", "FastAPI", "SQL", "Docker", "REST APIs"],
+    "candidate_text": "EMILY BLAKE - iOS Mobile Developer building Swift and SwiftUI mobile apps.",
+    "candidate_skills": ["Swift", "SwiftUI", "iOS", "Xcode", "Objective-C"],
+    "expected_tier": "Low Fit",
+    "expected_max_score": 50.0
+  },
+  {
+    "id": "eval-09",
+    "job_title": "Machine Learning Engineer (Computer Vision)",
+    "job_description": "PyTorch model training for image classification and object detection with OpenCV and TensorRT.",
+    "required_skills": ["Python", "PyTorch", "Computer Vision", "Deep Learning"],
+    "candidate_text": "RAHUL PATEL - ML Engineer working with PyTorch deep learning and computer vision architectures.",
+    "candidate_skills": ["Python", "PyTorch", "Computer Vision", "Deep Learning", "Linux"],
+    "expected_tier": "Top Match",
+    "expected_min_score": 75.0
+  },
+  {
+    "id": "eval-10",
+    "job_title": "Lead Software Architect",
+    "job_description": "Architect distributed cloud systems, mentor engineering teams, and enforce code quality.",
+    "required_skills": ["Architecture", "Python", "Cloud", "Microservices", "CI/CD"],
+    "candidate_text": "DR. ARJUN MEHTA - Principal Architect with 10+ years designing cloud microservices and Python architectures.",
+    "candidate_skills": ["Architecture", "Python", "Cloud", "Microservices", "CI/CD"],
+    "expected_tier": "Top Match",
+    "expected_min_score": 80.0
+  }
+]

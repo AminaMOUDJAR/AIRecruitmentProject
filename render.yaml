@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: talentmatch-ai
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt && python -m spacy download en_core_web_sm
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: LLM_PROVIDER
+        value: grok
+      - key: GROK_MODEL
+        value: grok-2-latest
+      - key: GROK_BASE_URL
+        value: https://api.x.ai/v1
+      - key: GROK_API_KEY
+        sync: false

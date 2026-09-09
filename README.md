@@ -1,61 +1,138 @@
-# TalentMatch AI — Smart AI Recruiting & Semantic Matching Platform
+# TalentMatch AI — Intelligent Recruitment & Candidate Matching Platform
+> This file was written with the assistance of Gemini AI.
 
-## Project Overview
-
-**TalentMatch AI** is a AI recruiting and resume matching platform that replaces rigid keyword filters with **dense semantic vector matching** and **Small Language Model reasoning**.
-
-The platform provides a dual-persona interface:
-1. **Recruiter Hub**: Post job requisitions, semantically rank candidates (with realistic 0–100% match scores), inspect RAG-retrieved CV evidence snippets, and automatically generate **custom technical interview questions** targeting candidate resume gaps.
-2. **Job Seeker Portal**: Upload CVs (PDF / TXT), fine-tune skills and work history, view matched jobs across the organization, and receive **SLM-powered resume optimization tips**.
+**Target Hardware:** 8GB RAM, i5 6th Gen, CPU-Only
 
 ---
 
-## Architecture & AI Pipeline
+## 1. System Architecture
 
 ```
-+-----------------------------------------------------------------------------------+
-|                           Frontend                                                |
-|  - Dual Role Switcher: Recruiter Hub & Job Seeker Portal                          |
-|  - Radial Score Meters, Skill Radar Tags, Dynamic Interview Question Viewer       |
-+------------------------------------------+----------------------------------------+
-                                           | REST API
-                                           v
-+-----------------------------------------------------------------------------------+
-|                           FastAPI High-Performance Backend                        |
-|  - Modular endpoints: /api/jobs, /api/candidates, /api/match, /api/ai/analyze     |
-|  - PyMuPDF PDF parser for instant CV text ingestion                               |
-+--------------------+-------------------------------------+------------------------+
-                     |                                     |
-                     v                                     v
-+------------------------------------+  +-------------------------------------------+
-|    RAG & Vector Semantic Engine    |  |            SLM Reasoning Engine           |
-| - PyTorch & HuggingFace Embeddings |  | - Small Language Model (SLM) Architecture |
-|   (sentence-transformers MiniLM)   |  |   (SmolLM2 / Qwen2.5 / Transformers)      |
-| - LangChain Document Chunking      |  | - Match Rationale & Skill Gap Extraction  |
-| - Dense Cosine Vector Similarity   |  | - Dynamic Gap-Targeted Interview Qs       |
-| - Sub-50ms Candidate Retrieval     |  | - Actionable Candidate CV Optimizer       |
-+------------------------------------+  +-------------------------------------------+
++------------------------------------------------------------------------------------+
+|                                  Frontend (Web UI)                                 |
+|   - Recruitment Workspace: semantic ranking, RAG evidence, evaluation scorecards   |
+|   - Candidate Portal: resume upload, profile editor, matched jobs, tips            |
++----------------------------+-------------------------------------------------------+
+                             | HTTP / REST (FastAPI)
+                             v
++------------------------------------------------------------------------------------+
+|                               FastAPI Async Backend                                |
+|   - JWT Auth & RBAC (Recruiter / Candidate roles)                                  |
+|   - Async BackgroundTasks for CV parsing and vector indexing                       |
+|   - Structured rotating JSON logger                                                |
++------------------+-----------------------------+-----------------------------------+
+                   |                             |
+                   v                             v
++-------------------------------+  +---------------------------------------------+
+|   SQLModel + SQLite           |  |   Qdrant In-Memory Vector Store             |
+|   - Users, Jobs, Candidates   |  |   - 384-dim dense vectors (MiniLM)          |
+|   - CVChunk mappings          |  |   - Cosine similarity retrieval             |
++-------------------------------+  +---------------------------------------------+
+                                              |
+                                              v
++------------------------------------------------------------------------------------+
+|                          LangGraph Multi-Agent Pipeline                            |
+|  1. ParserAgent:   PyMuPDF + spaCy NER + regex skill extraction                   |
+|  2. EmbedderAgent: LangChain chunker + all-MiniLM-L6-v2 embeddings               |
+|  3. MatcherAgent:  0.7*max_sim + 0.3*mean_sim + skill bonus (capped at 95%)       |
+|  4. AnalystAgent:  Grok (xAI) / HuggingFace SLM with JSON output guardrails       |
++------------------------------------------------------------------------------------+
 ```
 
+---
 
-## 🏁 Quickstart & How to Run
+## 2. Memory Budget (8GB RAM)
 
-### 1. Clone & Install Dependencies
+| Component | RAM Usage |
+| :--- | :--- |
+| OS + Browser | ~2.5 GB |
+| FastAPI + Python | ~400 MB |
+| Qdrant In-Memory | ~200 MB |
+| MiniLM Embeddings | ~100 MB |
+| spaCy (en_core_web_sm) | ~50 MB |
+| Grok API (optional) | ~0 MB |
+| HuggingFace SLM (fallback) | ~300 MB |
+| **Headroom** | **~4+ GB** |
+
+---
+
+## 3. Tech Stack
+
+- **Backend:** FastAPI, Uvicorn, SQLModel, SQLite, Qdrant (in-memory), LangGraph
+- **NLP & Parsing:** PyMuPDF, spaCy, sentence-transformers (all-MiniLM-L6-v2), langchain-text-splitters
+- **LLM:** Grok (xAI API) with automatic fallback to HuggingFace SmolLM2-135M in-process
+- **Auth:** bcrypt, python-jose (JWT — 15min access / 7-day refresh)
+- **Testing:** pytest, lightweight RAGAS benchmark suite
+- **Frontend:** Vanilla HTML/CSS/JS — built with the assistance of Gemini AI
+
+---
+
+## 4. API Endpoints
+
+### Authentication
+- `POST /api/auth/register` — Create candidate or recruiter account
+- `POST /api/auth/login` — Authenticate and receive JWT tokens
+- `POST /api/auth/refresh` — Refresh access token
+- `GET  /api/auth/me` — Get current authenticated user
+
+### Jobs
+- `GET  /api/jobs` — List all job requisitions
+- `GET  /api/jobs/{job_id}` — Get a single job
+- `POST /api/jobs` — Create a new job requisition
+- `GET  /api/jobs/{job_id}/matches` — Rank candidates for a job semantically
+
+### Candidates
+- `GET  /api/candidates` — List all candidates
+- `GET  /api/candidates/{id}` — Get candidate profile
+- `POST /api/candidates` — Create or update candidate profile
+- `POST /api/candidates/upload-cv` — Upload PDF/TXT resume (202 Accepted, async)
+- `GET  /api/candidates/{id}/analysis/{job_id}` — Generate AI evaluation scorecard
+- `POST /api/candidates/{id}/resume-tips` — Generate resume improvement suggestions
+- `POST /api/match/candidate/{id}` — Rank jobs for a specific candidate
+- `DELETE /api/candidates/{id}` — Delete candidate
+
+### System
+- `GET  /api/health` — Database, vector store, and LLM status
+- `POST /api/admin/reset-db` — Reset to original demo dataset
+
+---
+
+## 5. Running Locally
+
+### 1. Install Dependencies
 ```bash
-# Navigate to project folder
-cd project
-
-# Install requirements
 pip install -r backend/requirements.txt
+python -m spacy download en_core_web_sm
 ```
 
-### 2. Launch the Application
+### 2. (Optional) Configure Grok API Key
+```bash
+GROK_API_KEY=xai-your-key-here
+GROK_MODEL=grok-2-latest
+```
+Without a Grok key, the app runs fully offline using the built-in HuggingFace SLM.
+
+### 3. Start the Application
 ```bash
 python run.py
 ```
-*The app will start at `http://127.0.0.1:8000` and automatically open in your default web browser.*
+- Web UI: `http://127.0.0.1:8000`
+- API Docs: `http://127.0.0.1:8000/docs`
+- Health: `http://127.0.0.1:8000/api/health`
 
+---
 
+## 6. Tests & Benchmarks
 
-## 📄 License
-MIT License. Free to use, modify, and showcase in personal portfolios and interviews.
+```bash
+# Run test suite
+python -m pytest backend/tests -v
+
+# Run benchmark evaluation
+python benchmark/evaluate.py
+```
+
+---
+
+## 7. License
+MIT — free to use, modify, and deploy.

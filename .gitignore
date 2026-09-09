@@ -20,5 +20,12 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Local logs
+# Local logs, databases and environment
 *.log
+.env
+.env.*
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.log

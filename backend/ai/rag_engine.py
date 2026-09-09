@@ -7,6 +7,34 @@ from .embeddings import embedding_engine
 
 logger = logging.getLogger(__name__)
 
+# Common technical skill aliases and acronym normalizations
+COMMON_SKILL_ALIASES = {
+    "js": "javascript",
+    "ts": "typescript",
+    "py": "python",
+    "k8s": "kubernetes",
+    "docker": "docker",
+    "react": "react",
+    "reactjs": "react",
+    "node": "nodejs",
+    "nodejs": "nodejs",
+    "postgres": "postgresql",
+    "postgresql": "postgresql",
+    "mongo": "mongodb",
+    "mongodb": "mongodb",
+    "golang": "go",
+    "nlp": "natural language processing",
+    "ml": "machine learning",
+    "dl": "deep learning",
+    "cv": "computer vision",
+    "aws": "amazon web services",
+    "gcp": "google cloud platform"
+}
+
+def normalize_skill(skill: str) -> str:
+    s = skill.strip().lower()
+    return COMMON_SKILL_ALIASES.get(s, s)
+
 class ResumeRAGEngine:
     """
     RAG & Vector Retrieval Engine for Candidate CVs.
@@ -62,10 +90,17 @@ class ResumeRAGEngine:
             parts.append(f"Experience Level: {job['experience_level']}")
         return "\n".join(parts)
 
-    def retrieve_relevant_cv_chunks(self, candidate: Dict[str, Any], job_query_text: str, top_k: int = 3) -> List[Dict[str, Any]]:
+    def retrieve_relevant_cv_chunks(
+        self,
+        candidate: Dict[str, Any],
+        job_query_text: Optional[str] = None,
+        top_k: int = 3,
+        query_embedding: Optional[np.ndarray] = None
+    ) -> List[Dict[str, Any]]:
         """
         RAG Component: Chunks a candidate's CV using LangChain, embeds chunks,
         and retrieves the top_k most relevant snippets for the job query.
+        Reuses precomputed query_embedding if provided to eliminate redundant embeddings.
         """
         full_text = self._prepare_candidate_corpus(candidate)
         chunks = self.text_splitter.split_text(full_text)
@@ -73,7 +108,10 @@ class ResumeRAGEngine:
             return []
 
         chunk_embeddings = embedding_engine.embed_texts(chunks)
-        query_embedding = embedding_engine.embed_query(job_query_text)
+        if query_embedding is None:
+            if not job_query_text:
+                return []
+            query_embedding = embedding_engine.embed_query(job_query_text)
 
         similarities = embedding_engine.batch_cosine_similarity(query_embedding, chunk_embeddings)
         
@@ -90,36 +128,43 @@ class ResumeRAGEngine:
     def match_candidates_for_job(self, job: Dict[str, Any], candidates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Semantic matching and ranking of all candidates against a job description.
-        Combines dense vector similarity with skill overlap bonus for balanced 0-100% scores.
+        Combines dense vector similarity with normalized skill overlap for balanced 0-100% scores.
         """
         if not candidates:
             return []
 
         job_query = self._prepare_job_query(job)
+        # Precompute job query embedding ONCE outside the loop (O(1) embedding, not O(N))
         job_emb = embedding_engine.embed_query(job_query)
 
-        # Generate candidate representations
+        # Generate candidate representations in bulk
         cand_texts = [self._prepare_candidate_corpus(c) for c in candidates]
         cand_embeddings = embedding_engine.embed_texts(cand_texts)
 
         # Cosine similarities
         dense_scores = embedding_engine.batch_cosine_similarity(job_emb, cand_embeddings)
 
-        job_skills = set(s.lower().strip() for s in job.get("required_skills", []))
-        nice_skills = set(s.lower().strip() for s in job.get("nice_to_have_skills", []))
+        job_skills = set(normalize_skill(s) for s in job.get("required_skills", []))
+        nice_skills = set(normalize_skill(s) for s in job.get("nice_to_have_skills", []))
 
         results = []
         for idx, candidate in enumerate(candidates):
             raw_cosine = float(dense_scores[idx]) if len(dense_scores) > idx else 0.5
-            # Scale cosine similarity from typical range [0.2 - 0.9] to realistic [40% - 98%]
-            base_score = max(0.0, min(1.0, (raw_cosine - 0.15) / 0.70))
-
-            # Skill overlap bonus/penalty
-            cand_skills = set(s.lower().strip() for s in candidate.get("skills", []))
             
-            matched_req = [s for s in job.get("required_skills", []) if s.lower().strip() in cand_skills]
-            missing_req = [s for s in job.get("required_skills", []) if s.lower().strip() not in cand_skills]
-            matched_nice = [s for s in job.get("nice_to_have_skills", []) if s.lower().strip() in cand_skills]
+            # Calibrate cosine score according to active embedding backend:
+            # - Dense all-MiniLM-L6-v2 embeddings typically cluster in [0.15, 0.85]
+            # - Sparse TF-IDF fallback vectors cluster in [0.00, 0.55]
+            if getattr(embedding_engine, "_fallback_mode", False):
+                base_score = max(0.0, min(1.0, raw_cosine / 0.50))
+            else:
+                base_score = max(0.0, min(1.0, (raw_cosine - 0.15) / 0.70))
+
+            # Skill overlap with alias normalization
+            cand_skills = set(normalize_skill(s) for s in candidate.get("skills", []))
+            
+            matched_req = [s for s in job.get("required_skills", []) if normalize_skill(s) in cand_skills]
+            missing_req = [s for s in job.get("required_skills", []) if normalize_skill(s) not in cand_skills]
+            matched_nice = [s for s in job.get("nice_to_have_skills", []) if normalize_skill(s) in cand_skills]
 
             req_ratio = len(matched_req) / max(len(job_skills), 1) if job_skills else 1.0
             nice_ratio = len(matched_nice) / max(len(nice_skills), 1) if nice_skills else 0.0
@@ -128,8 +173,8 @@ class ResumeRAGEngine:
             blended_score = (base_score * 0.65) + (req_ratio * 0.25) + (nice_ratio * 0.10)
             final_percentage = round(min(98.0, max(25.0, blended_score * 100.0)), 1)
 
-            # Retrieve top RAG context chunks
-            top_chunks = self.retrieve_relevant_cv_chunks(candidate, job_query, top_k=2)
+            # Retrieve top RAG context chunks reusing precomputed query_embedding (zero redundant job embeds)
+            top_chunks = self.retrieve_relevant_cv_chunks(candidate, top_k=2, query_embedding=job_emb)
 
             # Determine fit tier
             if final_percentage >= 85:
@@ -174,16 +219,19 @@ class ResumeRAGEngine:
 
         dense_scores = embedding_engine.batch_cosine_similarity(cand_emb, job_embeddings)
 
-        cand_skills = set(s.lower().strip() for s in candidate.get("skills", []))
+        cand_skills = set(normalize_skill(s) for s in candidate.get("skills", []))
 
         results = []
         for idx, job in enumerate(jobs):
             raw_cosine = float(dense_scores[idx]) if len(dense_scores) > idx else 0.5
-            base_score = max(0.0, min(1.0, (raw_cosine - 0.15) / 0.70))
+            if getattr(embedding_engine, "_fallback_mode", False):
+                base_score = max(0.0, min(1.0, raw_cosine / 0.50))
+            else:
+                base_score = max(0.0, min(1.0, (raw_cosine - 0.15) / 0.70))
 
-            job_skills = set(s.lower().strip() for s in job.get("required_skills", []))
-            matched_req = [s for s in job.get("required_skills", []) if s.lower().strip() in cand_skills]
-            missing_req = [s for s in job.get("required_skills", []) if s.lower().strip() not in cand_skills]
+            job_skills = set(normalize_skill(s) for s in job.get("required_skills", []))
+            matched_req = [s for s in job.get("required_skills", []) if normalize_skill(s) in cand_skills]
+            missing_req = [s for s in job.get("required_skills", []) if normalize_skill(s) not in cand_skills]
 
             req_ratio = len(matched_req) / max(len(job_skills), 1) if job_skills else 1.0
             blended_score = (base_score * 0.70) + (req_ratio * 0.30)
@@ -208,6 +256,5 @@ class ResumeRAGEngine:
 
         results.sort(key=lambda x: x["match_score"], reverse=True)
         return results
-
 
 rag_engine = ResumeRAGEngine()
