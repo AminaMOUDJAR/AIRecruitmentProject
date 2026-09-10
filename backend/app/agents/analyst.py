@@ -100,22 +100,32 @@ class AnalystAgent:
             logger.debug(f"Grok call skipped: {e}")
         return None
 
-    def _call_hf_slm(self, prompt: str, system: str) -> Optional[str]:
-        # Local in-process Hugging Face SLM
+    def _summarize_with_slm(self, prompt: str) -> Optional[str]:
+        """
+        Local in-process Hugging Face SLM, used ONLY for free-text summary
+        generation. A 135M-parameter model cannot reliably emit the full JSON
+        scorecard schema, so structured fields always come from Grok or the
+        deterministic rules — never from the SLM.
+        """
         try:
             slm_reasoner._try_load_slm()
             if not slm_reasoner._is_slm_loaded:
                 return None
 
             instruct_prompt = (
-                f"<|im_start|>system\n{system}\nOutput valid JSON only.<|im_end|>\n"
+                "<|im_start|>system\nYou are a technical recruiting analyst. "
+                "Write exactly two concise sentences evaluating the candidate's fit. "
+                "Plain text only, no lists, no JSON.<|im_end|>\n"
                 f"<|im_start|>user\n{prompt}<|im_end|>\n"
                 f"<|im_start|>assistant\n"
             )
-            raw = slm_reasoner._generate_with_slm(instruct_prompt, max_new_tokens=450)
-            return raw
+            raw = slm_reasoner._generate_with_slm(instruct_prompt, max_new_tokens=120)
+            if raw and len(raw.strip()) > 30:
+                sentence = raw.strip().split("\n")[0].strip()
+                return sentence if sentence.endswith((".", "!")) else sentence + "."
+            return None
         except Exception as e:
-            logger.debug(f"SLM inference skipped: {e}")
+            logger.debug(f"SLM summary skipped: {e}")
         return None
 
     def _clean_json_string(self, text: str) -> str:
@@ -143,7 +153,9 @@ class AnalystAgent:
         job_title = job.get("title", "Role")
         req_skills = job.get("required_skills", [])
         cand_skills = candidate.get("skills", [])
-        
+        years_exp = candidate.get("years_experience")
+        years_display = f"{years_exp} yrs exp" if years_exp else "experience length not stated"
+
         evidence_texts = []
         if evidence_chunks:
             for ec in evidence_chunks[:3]:
@@ -152,7 +164,7 @@ class AnalystAgent:
         user_prompt = f"""
 Candidate Profile:
 - Name: {cand_name}
-- Title: {cand_title} ({candidate.get('years_experience', 3)} yrs exp)
+- Title: {cand_title} ({years_display})
 - Key Skills: {', '.join(cand_skills)}
 - Bio: {candidate.get('bio', '')}
 - Resume Evidence:
@@ -172,7 +184,7 @@ Generate the JSON evaluation.
         parsed_data = None
         model_used = None
 
-        # Check Grok cloud API first
+        # Check Grok cloud API first (structured JSON scorecard)
         if self._get_grok_key():
             raw_response = self._call_grok(user_prompt, SYSTEM_PROMPT)
             if raw_response:
@@ -183,21 +195,21 @@ Generate the JSON evaluation.
                 except Exception:
                     pass
 
-        # Check local SLM next
-        if not parsed_data:
-            raw_hf = self._call_hf_slm(user_prompt, SYSTEM_PROMPT)
-            if raw_hf:
-                try:
-                    cleaned = self._clean_json_string(raw_hf)
-                    parsed_data = json.loads(cleaned)
-                    model_used = f"hf:{getattr(settings, 'SLM_MODEL_NAME', 'smollm2')}"
-                except Exception:
-                    pass
-
         # Fallback to local heuristic synthesis
         if not parsed_data:
             model_used = "local_rules"
             parsed_data = self._generate_fallback_analysis(candidate, job, match_score, evidence_chunks)
+            # Local SLM contributes only the free-text summary, never structure
+            slm_summary = self._summarize_with_slm(
+                f"Candidate: {cand_name}, {cand_title} ({years_display}). "
+                f"Applying for: {job_title} at {job.get('company', 'Company')}. "
+                f"Fit score: {match_score}%. "
+                f"Matched skills: {', '.join(cand_skills[:4]) or 'none listed'}. "
+                f"Gaps: {', '.join(parsed_data.get('gaps', [])) or 'none'}."
+            )
+            if slm_summary:
+                parsed_data["executive_summary"] = slm_summary
+                model_used = f"hf:{getattr(settings, 'SLM_MODEL_NAME', 'smollm2')}+local_rules"
 
         hiring_rec = parsed_data.get("hiring_recommendation")
         if not hiring_rec or hiring_rec not in ["Strong Hire", "Hire", "Consider", "Pass"]:
@@ -263,17 +275,19 @@ Generate the JSON evaluation.
         cand_name = candidate.get("name", "Candidate")
         job_title = job.get("title", "the role")
         cand_title = candidate.get("title", "Specialist")
-        years_exp = candidate.get("years_experience", 3)
+        years_exp = candidate.get("years_experience")
         min_years = job.get("min_experience_years", 3)
 
         cand_skills = set(s.strip().lower() for s in candidate.get("skills", []))
         matched = [s for s in job.get("required_skills", []) if s.strip().lower() in cand_skills]
         missing = [s for s in job.get("required_skills", []) if s.strip().lower() not in cand_skills]
 
+        exp_phrase = f"{years_exp} years of experience as a {cand_title}" if years_exp else f"experience as a {cand_title} (length not stated)"
+
         if match_score >= 85:
             summary = (
                 f"{cand_name} displays strong technical alignment ({match_score}%) with the {job_title} requisition. "
-                f"With {years_exp} years of experience as a {cand_title} and direct skills in "
+                f"With {exp_phrase} and direct skills in "
                 f"{', '.join(matched[:3]) if matched else 'core technologies'}, they meet key hiring criteria."
             )
             rec = "Strong Hire"
@@ -300,7 +314,7 @@ Generate the JSON evaluation.
         strengths = []
         if matched:
             strengths.append(f"Demonstrated hands-on experience with: {', '.join(matched[:4])}.")
-        if years_exp >= min_years:
+        if years_exp is not None and years_exp >= min_years:
             strengths.append(f"Meets seniority benchmark with {years_exp} years relevant experience.")
         if evidence_chunks and len(evidence_chunks) > 0:
             strengths.append(f"Resume excerpt: \"{evidence_chunks[0].get('chunk_text', '')[:110]}...\"")
@@ -310,8 +324,10 @@ Generate the JSON evaluation.
         gaps = []
         if missing:
             gaps.append(f"Needs screening on: {', '.join(missing[:3])}.")
-        if years_exp < min_years:
+        if years_exp is not None and years_exp < min_years:
             gaps.append(f"Experience level ({years_exp} yrs) is below requested {min_years} yrs.")
+        elif years_exp is None:
+            gaps.append(f"Total years of experience not stated on resume; verify against the {min_years} yrs requirement.")
         if not gaps:
             gaps.append("No major skill gaps identified from resume review.")
 

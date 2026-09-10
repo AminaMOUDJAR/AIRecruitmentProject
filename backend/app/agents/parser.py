@@ -61,9 +61,20 @@ class ParserAgent:
         if not text:
             text = "No CV text provided."
 
-        # Extract email
+        # Extract email (None if absent — never fabricate contact data)
         email_match = re.search(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', text)
-        extracted_email = email_match.group(0) if email_match else "candidate@example.com"
+        extracted_email = email_match.group(0) if email_match else None
+
+        # Extract years of experience (e.g. "8+ years", "over 7 years of experience")
+        years_experience = None
+        for pattern in [
+            r'(\d{1,2})\s*\+?\s*years?(?!\s*\b\d)',          # "8 years", "8+ years"
+            r'(?:over|more than|above)\s*(\d{1,2})\s*years?',  # "over 7 years"
+        ]:
+            m = re.search(pattern, text, re.IGNORECASE)
+            if m:
+                years_experience = min(int(m.group(1)), 45)
+                break
 
         # Named entity extraction
         extracted_name = None
@@ -102,9 +113,6 @@ class ParserAgent:
             if re.search(pattern, text_lower):
                 detected_skills.append(skill)
 
-        if not detected_skills:
-            detected_skills = ["Software Engineering", "Python"]
-
         # Infer job title
         title_candidates = [
             "AI Engineer", "ML Engineer", "Data Scientist", "Data Analyst",
@@ -117,21 +125,15 @@ class ParserAgent:
                 detected_title = tc
                 break
 
+        # Experience entries are only created from detected organizations;
+        # no synthetic employment history
         experiences = []
-        if extracted_orgs:
-            for org in list(dict.fromkeys(extracted_orgs))[:2]:
-                experiences.append({
-                    "role": detected_title,
-                    "company": org,
-                    "duration": "Recent",
-                    "description": f"Worked on tech initiatives at {org}."
-                })
-        else:
+        for org in list(dict.fromkeys(extracted_orgs))[:2]:
             experiences.append({
                 "role": detected_title,
-                "company": "Tech Company",
-                "duration": "2021 - Present",
-                "description": "Experience extracted from uploaded resume."
+                "company": org,
+                "duration": "Not stated",
+                "description": f"Worked on tech initiatives at {org}."
             })
 
         latency_ms = int((time.time() - start_time) * 1000)
@@ -146,18 +148,12 @@ class ParserAgent:
             "name": extracted_name,
             "title": detected_title,
             "email": extracted_email,
-            "location": extracted_locations[0] if extracted_locations else "Algiers, Algeria",
+            "location": extracted_locations[0] if extracted_locations else "Not specified",
             "skills": detected_skills,
-            "years_experience": 3,
-            "bio": f"{detected_title} with experience in {', '.join(detected_skills[:4])}.",
+            "years_experience": years_experience,
+            "bio": f"{detected_title}" + (f" with experience in {', '.join(detected_skills[:4])}." if detected_skills else "."),
             "experience": experiences,
-            "education": [
-                {
-                    "degree": "Degree in Computer Science or Engineering",
-                    "institution": "University",
-                    "year": "2021"
-                }
-            ],
+            "education": [],  # no reliable education extractor; left empty rather than fabricated
             "raw_cv_text": text,
             "parsed_entities": {
                 "organizations": list(dict.fromkeys(extracted_orgs))[:5],

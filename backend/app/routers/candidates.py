@@ -8,10 +8,10 @@ from sqlmodel import Session, select
 from backend.app.database import get_session, engine
 from backend.app.models import Candidate, CVChunk, Job, CandidateCreate, AnalystReport
 from backend.app.dependencies import validate_uploaded_file
-from backend.app.agents.parser import parser_agent
 from backend.app.agents.embedder import embedder_agent
 from backend.app.agents.matcher import matcher_agent
 from backend.app.agents.analyst import analyst_agent
+from backend.app.agents.pipeline import process_cv_ingestion
 from backend.app.logger import logger
 
 router = APIRouter(prefix="", tags=["Candidates"])
@@ -56,18 +56,27 @@ def process_cv_pipeline(candidate_id_str: str, raw_bytes: Optional[bytes], raw_t
     # Background worker: extracts text, parses sections, embeds chunks into Qdrant
     logger.info(f"Processing CV for candidate {candidate_id_str}...")
     try:
-        parsed = parser_agent.parse(raw_bytes=raw_bytes, raw_text=raw_text, filename=filename)
-        
+        # Run the shared LangGraph parser -> embedder ingestion nodes
+        ingestion = process_cv_ingestion(
+            raw_bytes=raw_bytes,
+            raw_text=raw_text,
+            filename=filename,
+            candidate_id=candidate_id_str
+        )
+        parsed = ingestion["profile"]
+
         with Session(engine) as session:
             cand = _find_candidate(candidate_id_str, session)
             if not cand:
                 logger.error(f"Candidate {candidate_id_str} not found in database")
                 return
 
-            # Update candidate profile fields
+            # Update candidate profile fields (parsed values must be
+            # non-fabricated to overwrite; empty means "not found")
             cand.name = parsed.get("name") or cand.name
             cand.title = parsed.get("title") or cand.title
-            cand.email = parsed.get("email") or cand.email
+            if parsed.get("email"):
+                cand.email = parsed["email"]
             cand.skills = parsed.get("skills") or cand.skills
             cand.bio = parsed.get("bio") or cand.bio
             cand.experience = parsed.get("experience") or cand.experience
@@ -285,6 +294,10 @@ def delete_candidate(cand_id: str, session: Session = Depends(get_session)):
     if not cand:
         raise HTTPException(status_code=404, detail="Candidate not found")
 
+    # Remove vector index entries and chunk records alongside the profile
+    embedder_agent.delete_candidate_chunks(str(cand.id))
+    for chunk in session.exec(select(CVChunk).where(CVChunk.candidate_id == cand.id)).all():
+        session.delete(chunk)
     session.delete(cand)
     session.commit()
     return {"message": "Candidate deleted successfully"}

@@ -39,9 +39,9 @@ class Candidate(SQLModel, table=True):
     user_id: Optional[UUID] = Field(default=None, foreign_key="user.id", nullable=True)
     name: str = Field(index=True)
     title: str = Field(default="Software Engineer")
-    email: str = Field(default="candidate@example.com", index=True)
-    location: str = Field(default="Algiers, Algeria")
-    years_experience: int = Field(default=3)
+    email: Optional[str] = Field(default=None, index=True, nullable=True)
+    location: str = Field(default="Not specified")
+    years_experience: Optional[int] = Field(default=None, nullable=True)
     bio: str = Field(default="")
     skills: List[str] = Field(default_factory=list, sa_type=JSON)
     experience: List[Dict[str, Any]] = Field(default_factory=list, sa_type=JSON)
@@ -95,9 +95,9 @@ class CandidateCreate(BaseModel):
     id: Optional[str] = None
     name: str
     title: str = "Software Engineer"
-    email: str = "candidate@example.com"
-    location: str = "Algiers, Algeria"
-    years_experience: int = 3
+    email: Optional[str] = None
+    location: str = "Not specified"
+    years_experience: Optional[int] = None
     bio: str = ""
     skills: List[str] = []
     experience: List[Dict[str, Any]] = []

@@ -128,23 +128,36 @@ def test_analyst_agent_with_mock_grok(monkeypatch):
     assert len(report.interview_questions) >= 1
     assert report.interview_questions[0].topic == "Distributed Training"
 
-def test_slm_reasoner():
-    """Verifies SLMReasoner produces adaptive synthesis and interview questions."""
+def test_slm_reasoner_primitives():
+    """SLMReasoner is a load/generate primitive; unloaded it returns empty text."""
     from backend.ai.slm_reasoner import slm_reasoner
-    cand = {"id": "c-slm", "name": "Alan Turing", "title": "Mathematician", "skills": ["Logic", "Python"], "years_experience": 6}
-    job = {"id": "j-slm", "title": "Lead Cryptography Engineer", "required_skills": ["Python", "C++"], "min_experience_years": 5}
-    
-    analysis = slm_reasoner.generate_candidate_analysis(
-        candidate=cand,
-        job=job,
-        match_score=88.0,
-        matched_skills=["Python"],
-        missing_skills=["C++"],
-        rag_evidence=[]
+    # Not loaded in test environments (weights not pre-cached) — must degrade
+    # gracefully instead of raising
+    slm_reasoner._init_attempted = True
+    slm_reasoner._is_slm_loaded = False
+    assert slm_reasoner._generate_with_slm("test prompt") == ""
+
+def test_parser_does_not_fabricate_fields():
+    """Unknown fields must come back empty/None, never invented data."""
+    profile = parser_agent.parse(
+        raw_text="A resume with no contact info, no dates and no degrees. Knows Python.",
+        filename="mystery.pdf"
     )
-    assert analysis["candidate_name"] == "Alan Turing"
-    assert len(analysis["interview_questions"]) >= 2
-    assert "Python" in str(analysis["interview_questions"]) or "Core" in str(analysis["interview_questions"])
+    assert profile["email"] is None
+    assert profile["years_experience"] is None
+    assert profile["education"] == []
+    # No ORG entities detected -> no synthetic employment history
+    assert profile["experience"] == [] or all(
+        e["company"] not in ("Tech Company",) for e in profile["experience"]
+    )
+
+def test_parser_extracts_years_of_experience():
+    profile = parser_agent.parse(raw_text="""
+    Senior engineer with 8+ years of experience building Python systems.
+    Email: dev@example.com
+    """)
+    assert profile["years_experience"] == 8
+    assert profile["email"] == "dev@example.com"
 
 def test_langgraph_pipeline():
     sample_text = "John Smith - Full Stack AI Developer with React and Python FastAPI experience."

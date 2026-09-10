@@ -53,8 +53,8 @@ The application consists of two integrated portals:
 |                          LangGraph Multi-Agent Pipeline                            |
 |  1. ParserAgent:   PyMuPDF + spaCy NER + regex skill extraction                   |
 |  2. EmbedderAgent: LangChain chunker + all-MiniLM-L6-v2 embeddings               |
-|  3. MatcherAgent:  0.7*max_sim + 0.3*mean_sim + skill bonus (capped at 95%)       |
-|  4. AnalystAgent:  Grok (xAI) / Groq / HuggingFace SLM with JSON guardrails        |
+|  3. MatcherAgent:  alias-normalized skill overlap + calibrated dense similarity    |
+|  4. AnalystAgent:  Grok (xAI) / Groq JSON scorecards; local SLM for summaries only |
 +------------------------------------------------------------------------------------+
 ```
 

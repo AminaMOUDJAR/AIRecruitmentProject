@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Optional
 import logging
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 

@@ -13,7 +13,7 @@ def open_browser():
     # Give the server a second to start up before launching browser
     time.sleep(1.2)
     url = "http://127.0.0.1:8000"
-    print(f"\n🚀 Opening TalentMatch AI in browser: {url}\n")
+    print(f"\n Opening TalentMatch AI in browser: {url}\n")
     try:
         webbrowser.open(url)
     except Exception:
@@ -25,7 +25,7 @@ if __name__ == "__main__":
         sys.path.insert(0, project_root)
 
     print("=" * 70)
-    print(" 🎯 TalentMatch AI | Applied AI Recruiting & Resume Matching Platform")
+    print("  TalentMatch AI | Applied AI Recruiting & Resume Matching Platform")
     print(" Powered by SLMs, Dense RAG, HuggingFace, PyTorch & LangChain")
     print("=" * 70)
     print(" Web UI:           http://127.0.0.1:8000")
