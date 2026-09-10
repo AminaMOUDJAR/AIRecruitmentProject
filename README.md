@@ -1,13 +1,3 @@
----
-title: TalentMatch AI
-emoji: 💼
-colorFrom: indigo
-colorTo: blue
-sdk: gradio
-sdk_version: 4.44.0
-app_file: app.py
-pinned: false
----
 
 # TalentMatch AI — Intelligent Recruitment & Candidate Matching Platform
 
